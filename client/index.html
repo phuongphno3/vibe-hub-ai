@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vibe Hub Dashboard - Premium Pomodoro & Workspace</title>
+    <!-- Google Fonts: 'Be Vietnam Pro' được thiết kế chuyên biệt để hiển thị tiếng Việt tuyệt đẹp, không bị lỗi dấu di tự -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Lớp nền hạt mờ động (Animated Background Glows) -->
+    <div class="bg-glow bg-glow-1"></div>
+    <div class="bg-glow bg-glow-2"></div>
+
+    <div class="app-container">
+        <!-- HEADER -->
+        <header class="app-header">
+            <div class="header-logo">
+                <span class="logo-emoji">🍅</span>
+                <h1>Vibe Hub</h1>
+            </div>
+            <div class="header-status">
+                <span class="pulse-indicator"></span>
+                <span class="status-text">Vibe: <span id="current-vibe-display">Tập trung</span></span>
+            </div>
+        </header>
+
+        <!-- MAIN LAYOUT -->
+        <main class="dashboard-grid">
+            
+            <!-- CỘT TRÁI: POMODORO & MOOD JOURNAL -->
+            <section class="grid-left">
+                
+                <!-- CARD 1: POMODORO TIMER -->
+                <div class="glass-card timer-card" id="card-pomodoro">
+                    <div class="card-header">
+                        <h2>Pomodoro Timer</h2>
+                        <span class="card-icon">⚡</span>
+                    </div>
+                    
+                    <div class="timer-display-container">
+                        <!-- Vòng tròn SVG đếm ngược động -->
+                        <div class="svg-container">
+                            <svg class="timer-svg" viewBox="0 0 200 200">
+                                <circle class="timer-bg" cx="100" cy="100" r="85"></circle>
+                                <circle class="timer-progress" id="timer-ring" cx="100" cy="100" r="85"></circle>
+                            </svg>
+                            <div class="timer-text-overlay">
+                                <div class="timer-digits" id="timer-time">25:00</div>
+                                <div class="timer-label" id="timer-state-label">LÀM VIỆC</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Khung tùy chỉnh thời gian -->
+                    <div class="timer-settings">
+                        <div class="setting-item">
+                            <label for="work-duration">Làm việc (phút)</label>
+                            <input type="number" id="work-duration" value="25" min="1" max="120">
+                        </div>
+                        <div class="setting-item">
+                            <label for="break-duration">Nghỉ ngơi (phút)</label>
+                            <input type="number" id="break-duration" value="5" min="1" max="60">
+                        </div>
+                    </div>
+
+                    <!-- Các nút điều khiển thiết kế Glassmorphism nổi bật -->
+                    <div class="timer-controls">
+                        <button id="btn-start" class="btn btn-primary">Bắt đầu</button>
+                        <button id="btn-pause" class="btn btn-secondary" disabled>Tạm dừng</button>
+                        <button id="btn-reset" class="btn btn-danger">Đặt lại</button>
+                    </div>
+                </div>
+
+                <!-- CARD 2: AMBIENT FOCUS SOUNDS -->
+                <div class="glass-card ambient-card" id="card-ambient">
+                    <div class="card-header">
+                        <h2>Âm Thanh Tập Trung</h2>
+                        <span class="card-icon">🎵</span>
+                    </div>
+                    
+                    <p class="section-desc">Bật tiếng ồn trắng giúp tăng hiệu quả tập trung khi đồng hồ Pomodoro đang chạy:</p>
+                    
+                    <!-- Bộ chọn âm thanh trắng -->
+                    <div class="ambient-selector">
+                        <button class="ambient-btn active" data-sound="none" id="ambient-none">
+                            <span class="ambient-icon">🔇</span>
+                            <span class="ambient-label">Tắt âm</span>
+                        </button>
+                        <button class="ambient-btn" data-sound="rain" id="ambient-rain">
+                            <span class="ambient-icon">🌧️</span>
+                            <span class="ambient-label">Tiếng mưa</span>
+                        </button>
+                        <button class="ambient-btn" data-sound="wind" id="ambient-wind">
+                            <span class="ambient-icon">💨</span>
+                            <span class="ambient-label">Tiếng gió</span>
+                        </button>
+                        <button class="ambient-btn" data-sound="ocean" id="ambient-ocean">
+                            <span class="ambient-icon">🌊</span>
+                            <span class="ambient-label">Sóng biển</span>
+                        </button>
+                    </div>
+                    
+                    <!-- Thanh điều chỉnh âm lượng -->
+                    <div class="volume-control">
+                        <label for="ambient-volume">Âm lượng:</label>
+                        <input type="range" id="ambient-volume" min="0" max="100" value="50">
+                        <span id="volume-percentage">50%</span>
+                    </div>
+                </div>
+
+                <!-- CARD 3: MOOD VIBE JOURNAL -->
+                <div class="glass-card mood-card" id="card-mood-journal">
+                    <div class="card-header">
+                        <h2>Vibe Journal</h2>
+                        <span class="card-icon">🎨</span>
+                    </div>
+                    
+                    <p class="section-desc">Hôm nay vibe của bạn thế nào? Chọn tâm trạng để điều chỉnh không gian làm việc:</p>
+                    
+                    <!-- Bộ chọn tâm trạng -->
+                    <div class="mood-selector">
+                        <button class="mood-btn active" data-mood="focus" id="mood-focus">
+                            <span class="mood-emoji">🎯</span>
+                            <span class="mood-label">Tập trung</span>
+                        </button>
+                        <button class="mood-btn" data-mood="happy" id="mood-happy">
+                            <span class="mood-emoji">☀️</span>
+                            <span class="mood-label">Vui vẻ</span>
+                        </button>
+                        <button class="mood-btn" data-mood="sad" id="mood-sad">
+                            <span class="mood-emoji">🌧️</span>
+                            <span class="mood-label">Yên bình</span>
+                        </button>
+                        <button class="mood-btn" data-mood="relaxed" id="mood-relaxed">
+                            <span class="mood-emoji">🍃</span>
+                            <span class="mood-label">Thư giãn</span>
+                        </button>
+                    </div>
+
+                    <!-- Ghi chú nhanh nhật ký tâm trạng -->
+                    <div class="journal-input-group">
+                        <textarea id="journal-text" placeholder="Viết vài dòng về cảm xúc của bạn lúc này..." maxlength="200"></textarea>
+                        <button id="btn-save-journal" class="btn btn-small">Lưu tâm trạng</button>
+                    </div>
+
+                    <!-- Danh sách lịch sử tâm trạng đã lưu -->
+                    <div class="journal-history">
+                        <h3>Nhật ký hôm nay:</h3>
+                        <ul id="journal-list">
+                            <!-- Các ghi chú sẽ được chèn tự động ở đây -->
+                            <li class="empty-list-msg">Chưa có ghi chép nào.</li>
+                        </ul>
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- CỘT PHẢI: KANBAN TASK MANAGER -->
+            <section class="grid-right">
+                
+                <!-- CARD 3: KANBAN TASK MANAGER -->
+                <div class="glass-card kanban-card" id="card-kanban">
+                    <div class="card-header">
+                        <h2>Kanban Task Manager</h2>
+                        <span class="card-icon">📋</span>
+                    </div>
+
+                    <!-- Input thêm tác vụ mới -->
+                    <form id="new-task-form" class="task-form">
+                        <input type="text" id="new-task-input" placeholder="Thêm nhiệm vụ mới..." required autocomplete="off">
+                        <button type="submit" class="btn btn-plus">+</button>
+                    </form>
+
+                    <!-- Khung kéo thả Kanban -->
+                    <div class="kanban-board">
+                        
+                        <!-- CỘT 1: CẦN LÀM -->
+                        <div class="kanban-column" id="col-todo" data-status="todo">
+                            <div class="column-title">
+                                <h3>Cần làm</h3>
+                                <span class="badge" id="count-todo">0</span>
+                            </div>
+                            <div class="task-list" id="list-todo">
+                                <!-- Chèn card tác vụ tự động -->
+                            </div>
+                        </div>
+
+                        <!-- CỘT 2: ĐANG LÀM -->
+                        <div class="kanban-column" id="col-progress" data-status="progress">
+                            <div class="column-title">
+                                <h3>Đang làm</h3>
+                                <span class="badge" id="count-progress">0</span>
+                            </div>
+                            <div class="task-list" id="list-progress">
+                                <!-- Chèn card tác vụ tự động -->
+                            </div>
+                        </div>
+
+                        <!-- CỘT 3: ĐÃ XONG -->
+                        <div class="kanban-column" id="col-done" data-status="done">
+                            <div class="column-title">
+                                <h3>Đã xong</h3>
+                                <span class="badge" id="count-done">0</span>
+                            </div>
+                            <div class="task-list" id="list-done">
+                                <!-- Chèn card tác vụ tự động -->
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- CARD 4: MOTIVATIONAL QUOTE -->
+                <div class="glass-card quote-card" id="card-quote">
+                    <div class="card-header">
+                        <h2>Cảm Hứng Mỗi Giờ</h2>
+                        <span class="card-icon">💡</span>
+                    </div>
+                    <div class="quote-content">
+                        <p id="web-quote-text">"Đường dài vạn dặm bắt đầu từ một bước chân."</p>
+                        <cite id="web-quote-author">— Lão Tử</cite>
+                    </div>
+                    <button id="btn-refresh-quote" class="btn btn-quote-refresh">Đổi câu quote</button>
+                </div>
+
+                <!-- CARD 5: STICKY VIBE NOTES (GÓC Ý TƯỞNG & GHI CHÚ NHANH) -->
+                <div class="glass-card notes-card" id="card-sticky-notes">
+                    <div class="card-header">
+                        <h2>Sticky Vibe Notes</h2>
+                        <span class="card-icon">📝</span>
+                    </div>
+                    <p class="section-desc">Ghi nhanh các ý tưởng xuất hiện trong đầu để giải phóng não bộ và tiếp tục tập trung làm việc:</p>
+                    
+                    <!-- Form thêm ghi chú nhanh -->
+                    <form id="new-note-form" class="note-form">
+                        <div class="note-form-row">
+                            <input type="text" id="new-note-input" placeholder="Viết ý tưởng/ghi chú nhanh..." required autocomplete="off">
+                            <button type="submit" class="btn btn-note-add">+</button>
+                        </div>
+                        <div class="note-color-selectors">
+                            <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase;">Màu ghim:</span>
+                            <button type="button" class="color-dot active" data-color="yellow" style="color: #f59e0b; background-color: rgba(245, 158, 11, 0.2); border-color: #f59e0b;" title="Màu vàng"></button>
+                            <button type="button" class="color-dot" data-color="purple" style="color: #8b5cf6; background-color: rgba(139, 92, 246, 0.2); border-color: #8b5cf6;" title="Màu tím"></button>
+                            <button type="button" class="color-dot" data-color="blue" style="color: #3b82f6; background-color: rgba(59, 130, 246, 0.2); border-color: #3b82f6;" title="Màu xanh"></button>
+                        </div>
+                    </form>
+
+                    <!-- Khung hiển thị danh sách miếng dán ghi chú -->
+                    <div class="notes-container" id="notes-grid">
+                        <!-- Ghi chú chèn tự động -->
+                    </div>
+                </div>
+
+            </section>
+
+        </main>
+        
+        <footer class="app-footer">
+            <p>Vibe Coding Product • Thiết kế bởi Nguyễn Tuấn Phương</p>
+        </footer>
+    </div>
+
+    <!-- ==========================================================================
+         🔮 AI CHAT WIDGET & DRAWER (GLASSMORPHISM STYLE)
+         ========================================================================== -->
+    <!-- Nút Avatar AI nổi -->
+    <div id="ai-chat-trigger" class="ai-floating-btn" title="Trò chuyện cùng Vibe Mentor">
+        <span class="ai-btn-emoji">🤖</span>
+        <span class="ai-pulse"></span>
+    </div>
+
+    <!-- Khung cửa sổ Chat Drawer trượt -->
+    <div id="ai-chat-drawer" class="chat-drawer glass-panel">
+        <div class="chat-drawer-header">
+            <div class="chat-header-user">
+                <span class="chat-avatar-status"></span>
+                <span class="chat-avatar-icon">🤖</span>
+                <div class="chat-header-info">
+                    <h3>Vibe Mentor</h3>
+                    <span class="chat-subtitle">Trợ lý AI Học Tập</span>
+                </div>
+            </div>
+            <button id="btn-close-chat" class="btn-close-drawer" title="Đóng cửa sổ">&times;</button>
+        </div>
+
+        <!-- Danh sách tin nhắn cuộn -->
+        <div id="chat-messages-container" class="chat-messages">
+            <!-- Tin nhắn chào mừng mặc định -->
+            <div class="chat-msg msg-ai">
+                <span class="msg-avatar">🤖</span>
+                <div class="msg-bubble">
+                    Chào mừng bạn đến với Vibe Hub! Mình là <strong>Vibe Mentor</strong> 🚀. Mình ở đây để giúp bạn gỡ lỗi code, tóm tắt ghi chú, lập lịch Pomodoro hoặc trò chuyện giải tỏa căng thẳng. Hôm nay bạn đang nghiên cứu nội dung gì thế?
+                </div>
+            </div>
+
+            <!-- Typing Indicator (Ẩn mặc định) -->
+            <div id="chat-typing-indicator" class="typing-indicator chat-msg msg-ai" style="display: none;">
+                <span class="msg-avatar">🤖</span>
+                <div class="msg-bubble dots-bubble">
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Các nút gợi ý chat nhanh (Quick Actions) -->
+        <div class="chat-quick-actions">
+            <button class="quick-action-btn" data-text="Hãy lập lịch học Pomodoro 3 hiệp cho tôi hôm nay.">📅 Lập lịch học</button>
+            <button class="quick-action-btn" data-text="Tôi gặp lỗi code, giải thích giúp tôi đoạn này nhé: ">🔧 Sửa lỗi code</button>
+            <button class="quick-action-btn" data-text="Giải thích ngắn gọn khái niệm API là gì bằng một ví dụ dễ hiểu.">💡 Giải thích API</button>
+        </div>
+
+        <!-- Form nhập tin nhắn -->
+        <form id="chat-input-form" class="chat-input-area">
+            <input type="text" id="chat-user-input" placeholder="Hỏi Vibe Mentor bất kỳ điều gì..." required autocomplete="off">
+            <button type="submit" class="btn-send-chat" title="Gửi tin nhắn">
+                <svg viewBox="0 0 24 24" width="20" height="20">
+                    <path fill="currentColor" d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
+                </svg>
+            </button>
+        </form>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

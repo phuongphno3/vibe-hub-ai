@@ -1,0 +1,1444 @@
+/* ==========================================================================
+   VIBE HUB DASHBOARD - PREMIUM GLASSMORPHISM SYSTEM
+   ========================================================================== */
+
+/* CẤU HÌNH BIẾN MÀU SẮC (Có thể thay đổi động bằng JS theo tâm trạng) */
+:root {
+    /* Tông màu nền mặc định (Tập trung - Tím & Cyan) */
+    --bg-gradient-1: #0a0518;
+    --bg-gradient-2: #050a14;
+    --glow-color-1: #8b5cf6;
+    --glow-color-2: #06b6d4;
+    
+    /* Màu sắc giao diện chính */
+    --accent: #8b5cf6;
+    --accent-glow: rgba(139, 92, 246, 0.25);
+    --text-primary: #ffffff;
+    --text-secondary: #a78bfa;
+    --text-muted: #6b7280;
+    
+    /* Thuộc tính Kính Mờ (Glassmorphism) */
+    --glass-bg: rgba(255, 255, 255, 0.03);
+    --glass-bg-hover: rgba(255, 255, 255, 0.06);
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --glass-border-focus: rgba(139, 92, 246, 0.4);
+    --card-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+    
+    /* Màu cột Kanban */
+    --todo-color: #f59e0b;
+    --progress-color: #3b82f6;
+    --done-color: #10b981;
+}
+
+/* ==========================================================================
+   RESET & THIẾT LẬP CƠ BẢN
+   ========================================================================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Be Vietnam Pro', sans-serif;
+    -webkit-font-smoothing: antialiased;
+}
+
+body {
+    background-color: var(--bg-gradient-1);
+    color: var(--text-primary);
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    transition: background-color 1.5s ease;
+}
+
+/* Hiệu ứng hạt sáng ảo diệu bay lơ lửng ở nền */
+.bg-glow {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(120px);
+    z-index: -2;
+    opacity: 0.25;
+    pointer-events: none;
+    transition: all 1.5s ease-in-out;
+}
+
+.bg-glow-1 {
+    width: 600px;
+    height: 600px;
+    background: var(--glow-color-1);
+    top: -10%;
+    left: -10%;
+    animation: drift 15s infinite alternate ease-in-out;
+}
+
+.bg-glow-2 {
+    width: 500px;
+    height: 500px;
+    background: var(--glow-color-2);
+    bottom: -10%;
+    right: -10%;
+    animation: drift 20s infinite alternate-reverse ease-in-out;
+}
+
+@keyframes drift {
+    0% { transform: translate(0, 0) scale(1); }
+    100% { transform: translate(10%, 15%) scale(1.1); }
+}
+
+/* CONTAINER CHÍNH */
+.app-container {
+    width: 100%;
+    max-width: 1300px;
+    padding: 2rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    min-height: 100vh;
+}
+
+/* ==========================================================================
+   HEADER
+   ========================================================================== */
+.app-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    background: var(--glass-bg);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    box-shadow: var(--card-shadow);
+}
+
+.header-logo {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.logo-emoji {
+    font-size: 1.8rem;
+    animation: pulse 2s infinite ease-in-out;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+.header-logo h1 {
+    font-size: 1.6rem;
+    font-weight: 800;
+    background: linear-gradient(90deg, var(--text-primary), var(--text-secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: 0.5px;
+}
+
+.header-status {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 0.5rem 1rem;
+    border-radius: 30px;
+    border: 1px solid var(--glass-border);
+}
+
+.pulse-indicator {
+    width: 8px;
+    height: 8px;
+    background-color: var(--accent);
+    border-radius: 50%;
+    box-shadow: 0 0 10px var(--accent);
+    animation: flash 1.5s infinite alternate;
+}
+
+@keyframes flash {
+    0% { opacity: 0.3; }
+    100% { opacity: 1; }
+}
+
+.status-text {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-muted);
+}
+
+#current-vibe-display {
+    color: var(--text-secondary);
+}
+
+/* ==========================================================================
+   LAYOUT GRID
+   ========================================================================== */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.6fr;
+    gap: 1.5rem;
+    align-items: start;
+}
+
+.grid-left, .grid-right {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+/* ==========================================================================
+   HỆ THỐNG GLASS CARD CƠ BẢN
+   ========================================================================== */
+.glass-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--glass-border);
+    border-radius: 24px;
+    padding: 1.75rem;
+    box-shadow: var(--card-shadow);
+    transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.glass-card:hover {
+    border-color: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 12px 40px 0 var(--accent-glow);
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.25rem;
+}
+
+.card-header h2 {
+    font-size: 1.3rem;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+}
+
+.card-icon {
+    font-size: 1.3rem;
+    opacity: 0.8;
+}
+
+.section-desc {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    line-height: 1.4;
+    margin-bottom: 1.25rem;
+}
+
+/* ==========================================================================
+   CARD 1: POMODORO TIMER
+   ========================================================================== */
+.timer-card {
+    position: relative;
+}
+
+.timer-display-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 1.5rem 0;
+}
+
+.svg-container {
+    position: relative;
+    width: 220px;
+    height: 220px;
+}
+
+.timer-svg {
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg); /* Xoay ngược 90 độ để vòng tròn chạy từ đỉnh đỉnh đầu */
+}
+
+.timer-bg {
+    fill: none;
+    stroke: rgba(255, 255, 255, 0.03);
+    stroke-width: 8px;
+}
+
+.timer-progress {
+    fill: none;
+    stroke: var(--accent);
+    stroke-width: 8px;
+    stroke-linecap: round;
+    stroke-dasharray: 534; /* Chu vi vòng tròn: 2 * PI * 85 */
+    stroke-dashoffset: 534;
+    transition: stroke-dashoffset 0.1s linear, stroke 1s ease;
+    filter: drop-shadow(0 0 6px var(--accent));
+}
+
+.timer-text-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
+
+.timer-digits {
+    font-size: 2.8rem;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    color: var(--text-primary);
+}
+
+.timer-label {
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 2px;
+    color: var(--text-secondary);
+    margin-top: 0.25rem;
+}
+
+.timer-settings {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.setting-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.setting-item label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.setting-item input {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--glass-border);
+    padding: 0.6rem 0.8rem;
+    border-radius: 12px;
+    color: var(--text-primary);
+    font-size: 1rem;
+    font-weight: 600;
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+.setting-item input:focus {
+    border-color: var(--glass-border-focus);
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 0 10px rgba(139, 92, 246, 0.15);
+}
+
+/* NÚT BẤM */
+.timer-controls {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr 1fr;
+    gap: 0.75rem;
+}
+
+.btn {
+    border: none;
+    padding: 0.75rem 1.25rem;
+    border-radius: 14px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    outline: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btn:active {
+    transform: scale(0.97);
+}
+
+.btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--accent), #b4530900), var(--accent);
+    color: white;
+    box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+}
+
+.btn-primary:hover {
+    box-shadow: 0 6px 20px rgba(139, 92, 246, 0.5);
+    transform: translateY(-2px);
+}
+
+.btn-secondary {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid var(--glass-border);
+    color: var(--text-primary);
+}
+
+.btn-secondary:hover {
+    background: var(--glass-bg-hover);
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+}
+
+.btn-danger {
+    background: rgba(239, 68, 68, 0.15);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: #ef4444;
+}
+
+/* ==========================================================================
+   CARD: AMBIENT FOCUS SOUNDS (ÂM THANH TẬP TRUNG)
+   ========================================================================== */
+.ambient-selector {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.5rem;
+    margin-bottom: 1.25rem;
+}
+
+.ambient-btn {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    padding: 0.6rem 0.2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.3rem;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.ambient-btn:hover {
+    background: var(--glass-bg-hover);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.ambient-btn.active {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: var(--accent);
+    box-shadow: 0 0 12px var(--accent-glow);
+}
+
+.ambient-icon {
+    font-size: 1.4rem;
+}
+
+.ambient-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--text-muted);
+}
+
+.ambient-btn.active .ambient-label {
+    color: var(--text-primary);
+}
+
+.volume-control {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+.volume-control input[type="range"] {
+    flex: 1;
+    accent-color: var(--accent);
+    background: rgba(255, 255, 255, 0.08);
+    height: 6px;
+    border-radius: 3px;
+    outline: none;
+    cursor: pointer;
+}
+
+#volume-percentage {
+    min-width: 35px;
+    text-align: right;
+    color: var(--text-primary);
+}
+
+/* ==========================================================================
+   CARD 2: MOOD VIBE JOURNAL
+   ========================================================================== */
+.mood-selector {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.5rem;
+    margin-bottom: 1.25rem;
+}
+
+.mood-btn {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    padding: 0.6rem 0.2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.3rem;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.mood-btn:hover {
+    background: var(--glass-bg-hover);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.mood-btn.active {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: var(--accent);
+    box-shadow: 0 0 12px var(--accent-glow);
+}
+
+.mood-emoji {
+    font-size: 1.4rem;
+}
+
+.mood-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--text-muted);
+}
+
+.mood-btn.active .mood-label {
+    color: var(--text-primary);
+}
+
+.journal-input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.journal-input-group textarea {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    padding: 0.8rem;
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    outline: none;
+    resize: none;
+    min-height: 70px;
+    transition: all 0.3s ease;
+}
+
+.journal-input-group textarea:focus {
+    border-color: var(--glass-border-focus);
+    background: rgba(255, 255, 255, 0.07);
+}
+
+.btn-small {
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.08);
+    align-self: flex-end;
+}
+
+.btn-small:hover {
+    background: var(--glass-bg-hover);
+    color: var(--text-secondary);
+}
+
+.journal-history h3 {
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.75rem;
+    font-weight: 600;
+}
+
+#journal-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    max-height: 150px;
+    overflow-y: auto;
+    padding-right: 0.25rem;
+}
+
+/* Thanh cuộn tùy chỉnh */
+#journal-list::-webkit-scrollbar,
+.task-list::-webkit-scrollbar {
+    width: 4px;
+}
+#journal-list::-webkit-scrollbar-thumb,
+.task-list::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+}
+
+.journal-item {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--glass-border);
+    padding: 0.6rem 0.8rem;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+    animation: fadeIn 0.4s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.journal-item-left {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    overflow: hidden;
+}
+
+.journal-item-right {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    flex-shrink: 0;
+}
+
+.journal-item-time {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+}
+
+.btn-delete-journal {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 1.1rem;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.2s ease, color 0.2s ease;
+    margin-left: 0.2rem;
+    line-height: 1;
+}
+
+.journal-item:hover .btn-delete-journal {
+    opacity: 1;
+}
+
+.btn-delete-journal:hover {
+    color: #ef4444;
+}
+
+.empty-list-msg {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    font-style: italic;
+    text-align: center;
+    padding: 1rem 0;
+}
+
+/* ==========================================================================
+   CARD 3: KANBAN TASK MANAGER
+   ========================================================================== */
+.kanban-card {
+    display: flex;
+    flex-direction: column;
+}
+
+.task-form {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.task-form input {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--glass-border);
+    padding: 0.75rem 1rem;
+    border-radius: 16px;
+    color: var(--text-primary);
+    font-size: 0.95rem;
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+.task-form input:focus {
+    border-color: var(--glass-border-focus);
+    background: rgba(255, 255, 255, 0.07);
+}
+
+.btn-plus {
+    width: 46px;
+    height: 46px;
+    border-radius: 16px;
+    background: var(--accent);
+    color: white;
+    font-size: 1.3rem;
+    font-weight: 300;
+}
+
+.btn-plus:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px var(--accent-glow);
+}
+
+/* BẢNG KANBAN */
+.kanban-board {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+}
+
+.kanban-column {
+    background: rgba(0, 0, 0, 0.15);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    min-height: 380px;
+    transition: background 0.3s ease, border-color 0.3s ease;
+}
+
+.kanban-column.drag-over {
+    background: rgba(255, 255, 255, 0.03);
+    border-color: var(--accent);
+}
+
+.column-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.column-title h3 {
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+/* Đổi màu tiêu đề từng cột */
+#col-todo .column-title h3 { color: var(--todo-color); }
+#col-progress .column-title h3 { color: var(--progress-color); }
+#col-done .column-title h3 { color: var(--done-color); }
+
+.badge {
+    background: rgba(255, 255, 255, 0.08);
+    font-size: 0.75rem;
+    font-weight: 800;
+    padding: 0.2rem 0.5rem;
+    border-radius: 8px;
+    color: var(--text-primary);
+}
+
+.task-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    flex: 1;
+    overflow-y: auto;
+    padding-right: 0.1rem;
+}
+
+/* TẤM THẺ TÁC VỤ KANBAN CARD */
+.task-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--glass-border);
+    padding: 0.8rem 1rem;
+    border-radius: 14px;
+    cursor: grab;
+    user-select: none;
+    transition: all 0.2s ease;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.task-card:active {
+    cursor: grabbing;
+}
+
+.task-card.dragging {
+    opacity: 0.4;
+    transform: scale(0.96);
+    border-color: var(--accent);
+}
+
+.task-card:hover {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.18);
+    transform: translateY(-1px);
+}
+
+/* Dải màu nhỏ ở rìa trái của Task Card để biểu thị cột */
+.task-card::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+}
+
+#list-todo .task-card::before { background-color: var(--todo-color); }
+#list-progress .task-card::before { background-color: var(--progress-color); }
+#list-done .task-card::before { background-color: var(--done-color); }
+
+.task-content {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    word-break: break-word;
+    padding-left: 0.2rem;
+}
+
+/* Lịch sử gạch ngang khi tác vụ Đã Xong */
+#list-done .task-content {
+    text-decoration: line-through;
+    color: var(--text-muted);
+}
+
+.btn-delete-task {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 1.1rem;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.2s ease, color 0.2s ease;
+}
+
+.task-card:hover .btn-delete-task {
+    opacity: 1;
+}
+
+.btn-delete-task:hover {
+    color: #ef4444;
+}
+
+/* ==========================================================================
+   CARD 4: MOTIVATIONAL QUOTE
+   ========================================================================== */
+.quote-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.quote-content {
+    border-left: 2px solid var(--accent);
+    padding-left: 1rem;
+    margin: 0.5rem 0;
+}
+
+#web-quote-text {
+    font-size: 1rem;
+    font-weight: 400;
+    font-style: italic;
+    line-height: 1.5;
+    margin-bottom: 0.4rem;
+}
+
+#web-quote-author {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    font-weight: 600;
+    display: block;
+}
+
+.btn-quote-refresh {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--glass-border);
+    font-size: 0.85rem;
+    padding: 0.4rem 1rem;
+    align-self: flex-end;
+}
+
+.btn-quote-refresh:hover {
+    background: var(--glass-bg-hover);
+    color: var(--text-secondary);
+}
+
+/* ==========================================================================
+   CARD 5: STICKY VIBE NOTES
+   ========================================================================== */
+.notes-card {
+    display: flex;
+    flex-direction: column;
+}
+
+.note-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+    background: rgba(255, 255, 255, 0.01);
+    border: 1px solid var(--glass-border);
+    padding: 0.75rem;
+    border-radius: 16px;
+}
+
+.note-form-row {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.note-form input {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--glass-border);
+    padding: 0.6rem 0.8rem;
+    border-radius: 12px;
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+.note-form input:focus {
+    border-color: var(--glass-border-focus);
+    background: rgba(255, 255, 255, 0.07);
+}
+
+.note-color-selectors {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.color-dot {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.color-dot:hover {
+    transform: scale(1.15);
+}
+
+.color-dot.active {
+    transform: scale(1.2);
+    box-shadow: 0 0 8px currentColor;
+    border-color: #ffffff;
+}
+
+.btn-note-add {
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    background: var(--accent);
+    color: white;
+    font-size: 1.2rem;
+    padding: 0;
+}
+
+/* KHUNG HIỂN THỊ NOTES */
+.notes-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+    max-height: 250px;
+    overflow-y: auto;
+    padding-right: 0.1rem;
+}
+
+.notes-container::-webkit-scrollbar {
+    width: 4px;
+}
+.notes-container::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+}
+
+/* THẺ NOTE */
+.note-item {
+    padding: 1rem;
+    border-radius: 16px;
+    position: relative;
+    border: 1px solid transparent;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 100px;
+    animation: fadeIn 0.4s ease;
+    transition: all 0.3s ease;
+}
+
+.note-item:hover {
+    transform: translateY(-2px) rotate(0.5deg);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+}
+
+/* Các biến thể màu sắc của note khớp phong cách glassmorphism */
+.note-yellow {
+    background: rgba(245, 158, 11, 0.08);
+    border-color: rgba(245, 158, 11, 0.2);
+    color: #fef08a;
+}
+.note-yellow:hover {
+    border-color: rgba(245, 158, 11, 0.4);
+    box-shadow: 0 8px 25px rgba(245, 158, 11, 0.1);
+}
+
+.note-purple {
+    background: rgba(139, 92, 246, 0.08);
+    border-color: rgba(139, 92, 246, 0.2);
+    color: #ddd6fe;
+}
+.note-purple:hover {
+    border-color: rgba(139, 92, 246, 0.4);
+    box-shadow: 0 8px 25px rgba(139, 92, 246, 0.1);
+}
+
+.note-blue {
+    background: rgba(59, 130, 246, 0.08);
+    border-color: rgba(59, 130, 246, 0.2);
+    color: #bfdbfe;
+}
+.note-blue:hover {
+    border-color: rgba(59, 130, 246, 0.4);
+    box-shadow: 0 8px 25px rgba(59, 130, 246, 0.1);
+}
+
+.note-text {
+    font-size: 0.85rem;
+    font-weight: 500;
+    line-height: 1.4;
+    word-break: break-word;
+}
+
+.note-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 0.75rem;
+}
+
+.note-date {
+    font-size: 0.7rem;
+    opacity: 0.6;
+}
+
+.btn-delete-note {
+    background: none;
+    border: none;
+    color: currentColor;
+    font-size: 1.1rem;
+    cursor: pointer;
+    opacity: 0.4;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    line-height: 1;
+}
+
+.note-item:hover .btn-delete-note {
+    opacity: 1;
+}
+
+.btn-delete-note:hover {
+    transform: scale(1.2);
+    color: #ef4444;
+}
+
+.empty-notes-msg {
+    grid-column: 1 / -1;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    padding: 2rem 0;
+    font-style: italic;
+}
+
+/* ==========================================================================
+   🔮 AI CHAT WIDGET & DRAWER STYLES (PREMIUM GLASSMORPHISM)
+   ========================================================================== */
+
+/* 1. Nút Avatar AI nổi */
+.ai-floating-btn {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), var(--accent-glow));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 8px 32px rgba(139, 92, 246, 0.4);
+    z-index: 999;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.ai-floating-btn:hover {
+    transform: scale(1.1) rotate(5deg);
+    box-shadow: 0 12px 40px rgba(139, 92, 246, 0.6);
+}
+
+.ai-btn-emoji {
+    font-size: 1.8rem;
+}
+
+/* Chấm xanh nhấp nháy chỉ trạng thái Online của AI */
+.ai-pulse {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    width: 12px;
+    height: 12px;
+    background-color: var(--done-color, #10b981);
+    border-radius: 50%;
+    border: 2px solid var(--bg-gradient-1);
+    box-shadow: 0 0 8px var(--done-color, #10b981);
+    animation: pulse-ring 2s infinite;
+}
+
+@keyframes pulse-ring {
+    0% { transform: scale(0.95); opacity: 1; }
+    50% { transform: scale(1.2); opacity: 0.5; }
+    100% { transform: scale(0.95); opacity: 1; }
+}
+
+/* 2. Cửa sổ Chat Drawer trượt */
+.chat-drawer {
+    position: fixed;
+    bottom: 100px;
+    right: 25px;
+    width: 380px;
+    height: 520px;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    z-index: 998;
+    overflow: hidden;
+    transform: translateY(30px) scale(0.95);
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.chat-drawer.open {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* Header của Chat */
+.chat-drawer-header {
+    padding: 1rem 1.25rem;
+    background: rgba(20, 10, 45, 0.4);
+    border-bottom: 1px solid var(--glass-border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.chat-header-user {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.chat-avatar-status {
+    width: 8px;
+    height: 8px;
+    background-color: var(--done-color, #10b981);
+    border-radius: 50%;
+    box-shadow: 0 0 6px var(--done-color, #10b981);
+}
+
+.chat-avatar-icon {
+    font-size: 1.4rem;
+}
+
+.chat-header-info h3 {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #fff;
+    margin: 0;
+}
+
+.chat-subtitle {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+}
+
+.btn-close-drawer {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-size: 1.5rem;
+    cursor: pointer;
+    line-height: 1;
+    transition: color 0.2s;
+}
+
+.btn-close-drawer:hover {
+    color: #fff;
+}
+
+/* 3. Danh sách tin nhắn cuộn */
+.chat-messages {
+    flex: 1;
+    padding: 1.25rem;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+/* Tùy chỉnh thanh cuộn đẹp mắt cho cửa sổ chat */
+.chat-messages::-webkit-scrollbar {
+    width: 6px;
+}
+.chat-messages::-webkit-scrollbar-track {
+    background: transparent;
+}
+.chat-messages::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+}
+.chat-messages::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+/* Định dạng từng bong bóng tin nhắn */
+.chat-msg {
+    display: flex;
+    gap: 0.5rem;
+    align-items: flex-start;
+    max-width: 85%;
+}
+
+.msg-avatar {
+    font-size: 1.2rem;
+    margin-top: 3px;
+}
+
+.msg-bubble {
+    padding: 0.75rem 1rem;
+    border-radius: 15px;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    word-break: break-word;
+}
+
+/* Tin nhắn của AI (Vibe Mentor) */
+.chat-msg.msg-ai {
+    align-self: flex-start;
+}
+
+.chat-msg.msg-ai .msg-bubble {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--glass-border);
+    color: #f3f4f6;
+    border-top-left-radius: 2px;
+}
+
+/* Tin nhắn của Bạn (User) */
+.chat-msg.msg-user {
+    align-self: flex-end;
+    flex-direction: row-reverse;
+}
+
+.chat-msg.msg-user .msg-bubble {
+    background: linear-gradient(135deg, var(--accent), #db2777);
+    color: #fff;
+    border-top-right-radius: 2px;
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.15);
+}
+
+/* Khối định dạng code (Code Block) trong tin nhắn của AI */
+.msg-bubble pre {
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    padding: 0.5rem 0.75rem;
+    margin: 0.5rem 0;
+    overflow-x: auto;
+}
+
+.msg-bubble code {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.8rem;
+    color: #38bdf8;
+}
+
+/* 4. Các nút gợi ý chat nhanh (Quick Actions) */
+.chat-quick-actions {
+    padding: 0.5rem 1rem;
+    display: flex;
+    gap: 0.5rem;
+    overflow-x: auto;
+    border-top: 1px solid rgba(255, 255, 255, 0.03);
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.chat-quick-actions::-webkit-scrollbar {
+    height: 4px;
+}
+
+.quick-action-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    padding: 0.35rem 0.75rem;
+    color: var(--text-muted);
+    font-size: 0.7rem;
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+}
+
+.quick-action-btn:hover {
+    background: var(--glass-active);
+    color: #fff;
+    border-color: rgba(255, 255, 255, 0.15);
+    transform: translateY(-1px);
+}
+
+/* 5. Form nhập tin nhắn */
+.chat-input-area {
+    padding: 1rem 1.25rem;
+    background: rgba(20, 10, 45, 0.4);
+    border-top: 1px solid var(--glass-border);
+    display: flex;
+    gap: 0.5rem;
+}
+
+.chat-input-area input {
+    flex: 1;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--glass-border);
+    border-radius: 10px;
+    padding: 0.65rem 1rem;
+    color: #fff;
+    font-family: inherit;
+    font-size: 0.85rem;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.chat-input-area input:focus {
+    border-color: var(--accent);
+}
+
+.btn-send-chat {
+    background: linear-gradient(135deg, var(--accent), #db2777);
+    color: #fff;
+    border: none;
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s;
+}
+
+.btn-send-chat:hover {
+    transform: scale(1.05);
+}
+
+/* 6. Typing Indicator (Hiệu ứng nhấp nháy 3 dấu chấm) */
+.dots-bubble {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 0.75rem 1.25rem;
+}
+
+.dots-bubble .dot {
+    width: 6px;
+    height: 6px;
+    background-color: var(--text-muted);
+    border-radius: 50%;
+    display: inline-block;
+    animation: typing-bounce 1.4s infinite ease-in-out both;
+}
+
+.dots-bubble .dot:nth-child(1) {
+    animation-delay: -0.32s;
+}
+
+.dots-bubble .dot:nth-child(2) {
+    animation-delay: -0.16s;
+}
+
+@keyframes typing-bounce {
+    0%, 80%, 100% { transform: scale(0); }
+    40% { transform: scale(1.0); }
+}
+
+@media (max-width: 480px) {
+    .chat-drawer {
+        width: calc(100% - 30px);
+        right: 15px;
+        left: 15px;
+        bottom: 90px;
+        height: 480px;
+    }
+}
+
+/* ==========================================================================
+   FOOTER
+   ========================================================================== */
+.app-footer {
+    text-align: center;
+    padding: 1rem 0;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+/* ==========================================================================
+   RESPONSIVE DESIGN (Tương thích thiết bị di động)
+   ========================================================================== */
+@media (max-width: 900px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 600px) {
+    .app-container {
+        padding: 1rem 0.75rem;
+    }
+    
+    .glass-card {
+        padding: 1.25rem;
+    }
+
+    .kanban-board {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    .kanban-column {
+        min-height: 250px;
+    }
+}

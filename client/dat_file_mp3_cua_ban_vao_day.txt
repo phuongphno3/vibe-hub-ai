@@ -1,0 +1,6 @@
+Hãy copy các file âm thanh .mp3 của bạn vào thư mục này:
+1. File tiếng mưa đặt tên là: rain.mp3
+2. File tiếng gió đặt tên là: wind.mp3
+3. File tiếng sóng biển đặt tên là: ocean.mp3
+
+Sau khi copy xong, bạn chỉ cần tải lại trang web (F5) là có thể chọn và phát nhạc trực tiếp từ các file âm thanh chất lượng cao của bạn!

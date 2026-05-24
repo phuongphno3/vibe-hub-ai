@@ -1,0 +1,23 @@
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Environment variables (Crucial for security!)
+.env
+.env*.local
+
+# Database
+server/db/*.sqlite
+server/db/*.db
+*.sqlite
+*.db
+
+# Operating System Files
+Thumbs.db
+EHthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+.DS_Store
