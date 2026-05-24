@@ -250,15 +250,50 @@ document.addEventListener('DOMContentLoaded', () => {
             
             this.currentSound = soundType;
             
-            // Khởi tạo đối tượng Audio động trỏ vào thư mục sounds/
-            this.audioElement = new Audio(`sounds/${soundType}.mp3`);
+            // Các đường dẫn nhạc online dự phòng (siêu nhẹ, tải nhanh) dùng cho Production
+            const ONLINE_FALLBACKS = {
+                rain: 'https://raw.githubusercontent.com/libgdx/libgdx/master/tests/gdx-tests-android/assets/data/rain.mp3', // Tiếng mưa 1.5MB siêu nhẹ tải cực nhanh
+                wind: 'https://assets.mixkit.co/active_storage/sfx/2568/2568-84.wav', // Tiếng gió nhẹ
+                ocean: 'https://assets.mixkit.co/active_storage/sfx/2513/2513-84.wav' // Tiếng sóng biển
+            };
+            
+            // Bước 1: Thử phát từ thư mục sounds/
+            const localPath1 = `sounds/${soundType}.mp3`;
+            this.audioElement = new Audio(localPath1);
             this.audioElement.loop = true;
             this.audioElement.volume = this.volume;
             
-            // Bắt đầu phát âm thanh và bắt lỗi nếu chưa có file
-            this.audioElement.play().catch(error => {
-                console.log("Không thể phát file âm thanh: ", error);
-                alert(`⚠️ Lỗi: Âm thanh này chưa được thêm vào web, hãy đợi cập nhật nhé`);
+            this.audioElement.play().then(() => {
+                console.log(`🎵 Đang phát âm thanh gốc: ${localPath1}`);
+            }).catch(error1 => {
+                console.log(`⚠️ Không tìm thấy file ở ${localPath1}, đang thử tìm ở thư mục gốc...`);
+                
+                // Bước 2: Thử phát trực tiếp từ thư mục gốc client (nơi người dùng hay đặt nhầm)
+                const localPath2 = `${soundType}.mp3`;
+                this.audioElement = new Audio(localPath2);
+                this.audioElement.loop = true;
+                this.audioElement.volume = this.volume;
+                
+                this.audioElement.play().then(() => {
+                    console.log(`🎵 Đang phát âm thanh ở thư mục gốc: ${localPath2}`);
+                }).catch(error2 => {
+                    console.log(`⚠️ Không tìm thấy hoặc file quá nặng không tải được ở ${localPath2}.`);
+                    
+                    // Bước 3: Phát từ link online dự phòng (siêu nhẹ, đảm bảo deploy online chạy mượt 100%)
+                    if (ONLINE_FALLBACKS[soundType]) {
+                        console.log(`⚡ Kích hoạt âm thanh Online dự phòng (nhẹ & nhanh) cho: ${soundType}`);
+                        this.audioElement = new Audio(ONLINE_FALLBACKS[soundType]);
+                        this.audioElement.loop = true;
+                        this.audioElement.volume = this.volume;
+                        
+                        this.audioElement.play().catch(error3 => {
+                            console.error("Không thể phát âm thanh online dự phòng: ", error3);
+                            alert(`⚠️ Lỗi: Không thể phát âm thanh ${soundType}. Vui lòng kiểm tra lại kết nối mạng.`);
+                        });
+                    } else {
+                        alert(`⚠️ Lỗi: Âm thanh này chưa được cấu hình.`);
+                    }
+                });
             });
         }
     }
